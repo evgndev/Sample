@@ -28,7 +28,7 @@ public class PortletViewController {
 	@RenderMapping
 	public String question(Model model) {
 		model.addAttribute("releaseInfo", ReleaseInfo.getReleaseInfo());
-
+    //test
 		return "sample/view";
 	}
 
