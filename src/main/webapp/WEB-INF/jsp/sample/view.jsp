@@ -1,23 +1,57 @@
-<%--
-/**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- */
---%>
-
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
+<%@ page import="com.liferay.portal.kernel.util.ParamUtil" %>
+<%@ page import="org.evgndev.sample.domain.Cat" %>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@include file="/WEB-INF/jsp/init.jsp" %>
 
-This is the <b>sample</b> portlet.<br />
+<%
+    String backURL = ParamUtil.getString(request, "backURL");
 
-<c:out escapeXml="true" value="${releaseInfo}" />.
+    List<Cat> cats = (List<Cat>)request.getAttribute("cats");
+
+    String title = "view";
+%>
+<liferay-ui:header title="<%= title %>" backURL="<%= backURL %>" showBackURL="true"/>
+
+<portlet:renderURL var="editURL">
+    <portlet:param name="mvcPath" value="sample/edit"/>
+</portlet:renderURL>
+<aui:a href="<%= editURL %>">edit</aui:a>
+
+<%-- Order table --%>
+<liferay-ui:search-container
+        emptyResultsMessage="there-are-no-cats"
+        delta="20"
+>
+
+    <liferay-ui:search-container-results>
+        <%
+            total = cats.size();
+            results = cats;
+
+            pageContext.setAttribute("results", results);
+            pageContext.setAttribute("total", total);
+        %>
+    </liferay-ui:search-container-results>
+
+    <liferay-ui:search-container-row
+            className="org.evgndev.sample.domain.Cat"
+            keyProperty="catId"
+            modelVar="cat"
+            rowVar="row"
+    >
+
+        <%-- Identificator--%>
+        <liferay-ui:search-container-column-text
+                name="id"
+                value="<%= String.valueOf(cat.getCatId()) %>"
+        />
+
+        <%-- Name--%>
+        <liferay-ui:search-container-column-text
+                name="name"
+                value="<%= String.valueOf(cat.getName()) %>"
+        />
+    </liferay-ui:search-container-row>
+    <liferay-ui:search-iterator searchContainer="<%= searchContainer %>"/>
+</liferay-ui:search-container>
