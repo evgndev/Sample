@@ -51,7 +51,9 @@
         <property name="dataSource" ref="dataSource"/>
         <property name="annotatedClasses">
             <list>
-                <value>org.evgndev.sample.domain.Cat</value>
+                <value>org.evgndev.sample.domain.Form</value>
+                <value>org.evgndev.sample.domain.FormType</value>
+                <value>org.evgndev.sample.domain.FormCategory</value>
             </list>
         </property>
         <property name="hibernateProperties">

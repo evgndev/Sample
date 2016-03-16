@@ -16,14 +16,19 @@ package org.evgndev.sample.controller;
 
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.ReleaseInfo;
-import org.evgndev.sample.domain.Cat;
-import org.evgndev.sample.service.CatService;
+import org.evgndev.sample.domain.Form;
+import org.evgndev.sample.domain.FormCategory;
+import org.evgndev.sample.domain.FormType;
+import org.evgndev.sample.service.FormService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
@@ -32,8 +37,8 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("VIEW")
@@ -42,7 +47,7 @@ public class PortletViewController {
 	private static final Logger log = LoggerFactory.getLogger(PortletViewController.class.getName());
 
 	@Autowired
-	private CatService catService;
+	private FormService formService;
 
 	@RenderMapping
 	public String question(RenderRequest request, Model model) {
@@ -50,34 +55,44 @@ public class PortletViewController {
 		String page = ParamUtil.getString(request,"mvcPath", "sample/view");
 
 		if (page.equals("sample/view")) {
-			List<Cat> cats = new ArrayList<Cat>();
+			List<Form> forms = formService.getForms();
+			model.addAttribute("forms", forms);
+		} else if (page.equals("sample/edit")) {
+			List<FormType> formTypes = formService.getFormTypes();
+			model.addAttribute("formTypes", formTypes);
 
-			Cat cat1 = new Cat();
-			cat1.setCatId(1L);
-			cat1.setName("Catty");
-			cats.add(cat1);
-
-			Cat cat2 = new Cat();
-			cat2.setCatId(2L);
-			cat2.setName("Natty");
-			cats.add(cat2);
-
-			model.addAttribute("cats", cats);
+			List<FormCategory> formCategories = formService.getFormCategories();
+			model.addAttribute("formCategories", formCategories);
 		}
 
 		model.addAttribute("releaseInfo", ReleaseInfo.getReleaseInfo());
 		return page;
 	}
 
-	@ActionMapping(params = "action=saveCat")
-	public void saveCat(ActionRequest actionRequest,
+	@ActionMapping(params = "action=saveForm")
+	public void saveForm(ActionRequest actionRequest,
 						 ActionResponse actionResponse,
 						 Model model,
-						 @ModelAttribute("cat") Cat cat,
+						 @ModelAttribute("form") Form form,
 						 BindingResult result) throws Exception {
 
-		log.info("cat: " + cat.getName());
-		catService.addCat(cat);
-		log.info("cat added");
+		log.info("form: " + form.getName());
+		formService.addForm(form);
+		log.info("form added");
 	}
+
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) throws Exception{
+		binder.registerCustomEditor(Set.class,"formCategory", new CustomCollectionEditor(Set.class){
+			protected Object convertElement(Object element){
+				if (element instanceof String) {
+					FormCategory formCategory = formService.getFormCategory(Long.parseLong(element.toString()));
+
+					return formCategory;
+				}
+				return null;
+			}
+		});
+	}
+
 }
