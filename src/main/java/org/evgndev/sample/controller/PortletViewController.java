@@ -16,9 +16,9 @@ package org.evgndev.sample.controller;
 
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.ReleaseInfo;
-import org.evgndev.sample.domain.Form;
-import org.evgndev.sample.domain.FormCategory;
-import org.evgndev.sample.domain.FormType;
+import org.evgndev.sample.model.Form;
+import org.evgndev.sample.model.FormCategory;
+import org.evgndev.sample.model.FormType;
 import org.evgndev.sample.service.FormService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -45,6 +47,12 @@ import java.util.Set;
 public class PortletViewController {
 
 	private static final Logger log = LoggerFactory.getLogger(PortletViewController.class.getName());
+	
+	public static final String CMD_TABLE = "cmdTable";
+	public static final String JSP_VIEW = "ajaxed/view";
+	public static final String JSP_TABLE = "ajaxed/table";
+	public static final String JSP_EDIT= "ajaxed/edit";
+
 
 	@Autowired
 	private FormService formService;
@@ -52,12 +60,12 @@ public class PortletViewController {
 	@RenderMapping
 	public String question(RenderRequest request, Model model) {
 
-		String page = ParamUtil.getString(request,"mvcPath", "sample/view");
+		String page = ParamUtil.getString(request,"mvcPath", JSP_VIEW);
 
-		if (page.equals("sample/view")) {
+		if (page.equals(JSP_VIEW)) {
 			List<Form> forms = formService.getForms();
 			model.addAttribute("forms", forms);
-		} else if (page.equals("sample/edit")) {
+		} else if (page.equals(JSP_EDIT)) {
 			List<FormType> formTypes = formService.getFormTypes();
 			model.addAttribute("formTypes", formTypes);
 
@@ -67,6 +75,14 @@ public class PortletViewController {
 
 		model.addAttribute("releaseInfo", ReleaseInfo.getReleaseInfo());
 		return page;
+	}
+
+
+	@ResourceMapping
+	public String getTableJSP(ModelMap model) {
+		List<Form> forms = formService.getForms();
+		model.addAttribute("forms", forms);
+		return JSP_TABLE;
 	}
 
 	@ActionMapping(params = "action=saveForm")

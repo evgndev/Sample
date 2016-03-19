@@ -1,7 +1,7 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page import="com.liferay.portal.kernel.util.ParamUtil" %>
-<%@ page import="org.evgndev.sample.domain.FormType" %>
-<%@ page import="org.evgndev.sample.domain.FormCategory" %>
+<%@ page import="org.evgndev.sample.model.FormType" %>
+<%@ page import="org.evgndev.sample.model.FormCategory" %>
 
 <%@include file="/WEB-INF/jsp/init.jsp" %>
 

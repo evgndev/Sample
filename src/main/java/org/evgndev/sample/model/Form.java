@@ -1,4 +1,4 @@
-package org.evgndev.sample.domain;
+package org.evgndev.sample.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -21,17 +21,18 @@ public class Form implements Serializable {
 
     private String name;
 
+    private Date formDate;
+
     @ManyToOne
     @JoinColumn(name = "formTypeId")
     private FormType formType;
 
-    @ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
+    @ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinTable(name="sample_form_formCategory",
             joinColumns={@JoinColumn(name="FORM_ID")},
             inverseJoinColumns={@JoinColumn(name="FORM_CATEGORY_ID")})
-    private Set<FormCategory> formCategory;
 
-    private Date formDate;
+    private Set<FormCategory> formCategory;
 
     public FormType getFormType() {
         return formType;

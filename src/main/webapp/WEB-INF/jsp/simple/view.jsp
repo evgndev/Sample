@@ -1,7 +1,7 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page import="com.liferay.portal.kernel.util.ParamUtil" %>
-<%@ page import="org.evgndev.sample.domain.Form" %>
-<%@ page import="org.evgndev.sample.domain.FormCategory" %>
+<%@ page import="org.evgndev.sample.model.Form" %>
+<%@ page import="org.evgndev.sample.model.FormCategory" %>
 <%@ page import="com.google.common.base.Joiner" %>
 
 <%@include file="/WEB-INF/jsp/init.jsp" %>
@@ -20,7 +20,7 @@
 </portlet:renderURL>
 <aui:a href="<%= editURL %>">edit</aui:a>
 
-<%-- Order table --%>
+<%-- table --%>
 <liferay-ui:search-container
         emptyResultsMessage="there-are-no-forms"
         delta="20"
@@ -37,7 +37,7 @@
     </liferay-ui:search-container-results>
 
     <liferay-ui:search-container-row
-            className="org.evgndev.sample.domain.Form"
+            className="org.evgndev.sample.model.Form"
             keyProperty="formId"
             modelVar="form"
             rowVar="row"

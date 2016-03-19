@@ -1,9 +1,11 @@
 package org.evgndev.sample.service;
 
-import org.evgndev.sample.dao.FormRepository;
-import org.evgndev.sample.domain.Form;
-import org.evgndev.sample.domain.FormCategory;
-import org.evgndev.sample.domain.FormType;
+import org.evgndev.sample.model.Form;
+import org.evgndev.sample.model.FormCategory;
+import org.evgndev.sample.model.FormType;
+import org.evgndev.sample.repository.FormCategoryRepository;
+import org.evgndev.sample.repository.FormRepository;
+import org.evgndev.sample.repository.FormTypeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,26 +23,32 @@ public class FormServiceImpl implements FormService {
     @Autowired
     private FormRepository formRepository;
 
+    @Autowired
+    private FormTypeRepository formTypeRepository;
+
+    @Autowired
+    private FormCategoryRepository formCategoryRepository;
+
     /**
      * Add a new form
      */
     public void addForm(Form form) {
-        formRepository.addForm(form);
+        formRepository.save(form);
     }
 
     public List<Form> getForms() {
-        return formRepository.getForms();
+        return formRepository.findAll();
     }
 
     public List<FormType> getFormTypes(){
-        return formRepository.getFormTypes();
+        return formTypeRepository.findAll();
     }
 
     public List<FormCategory> getFormCategories() {
-        return formRepository.getFormCategories();
+        return formCategoryRepository.findAll();
     }
 
     public FormCategory getFormCategory(long formCategoryId) {
-        return formRepository.getFormCategory(formCategoryId);
+        return formCategoryRepository.findByFormCategoryId(formCategoryId);
     }
 }

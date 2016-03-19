@@ -1,8 +1,8 @@
 package org.evgndev.sample.service;
 
-import org.evgndev.sample.domain.Form;
-import org.evgndev.sample.domain.FormCategory;
-import org.evgndev.sample.domain.FormType;
+import org.evgndev.sample.model.Form;
+import org.evgndev.sample.model.FormCategory;
+import org.evgndev.sample.model.FormType;
 
 import java.util.List;
 

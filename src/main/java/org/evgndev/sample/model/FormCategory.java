@@ -1,4 +1,4 @@
-package org.evgndev.sample.domain;
+package org.evgndev.sample.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,14 +11,14 @@ import java.io.Serializable;
  */
 
 @Entity
-@Table(name = "sample_formType")
-public class FormType implements Serializable {
+@Table(name = "sample_formCategory")
+public class FormCategory implements Serializable {
 
-    private static final long serialVersionUID = -3061644797237282851L;
+    private static final long serialVersionUID = -7795322906059784136L;
 
     @Id
     @GeneratedValue
-    private Long formTypeId;
+    private Long formCategoryId;
 
     private String name;
 
@@ -30,12 +30,12 @@ public class FormType implements Serializable {
         this.name = name;
     }
 
-    public Long getFormTypeId() {
-        return formTypeId;
+    public Long getFormCategoryId() {
+        return formCategoryId;
     }
 
-    public void setFormTypeId(Long formTypeId) {
-        this.formTypeId = formTypeId;
+    public void setFormCategoryId(Long formTypeId) {
+        this.formCategoryId = formTypeId;
     }
 }
 
