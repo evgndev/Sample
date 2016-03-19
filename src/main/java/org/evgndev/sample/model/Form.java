@@ -21,7 +21,10 @@ public class Form implements Serializable {
 
     private String name;
 
-    private Date formDate;
+    @Temporal(TemporalType.DATE)
+    private Date createDate;
+    @Temporal(TemporalType.DATE)
+    private Date updateDate;
 
     @ManyToOne
     @JoinColumn(name = "formTypeId")
@@ -33,6 +36,39 @@ public class Form implements Serializable {
             inverseJoinColumns={@JoinColumn(name="FORM_CATEGORY_ID")})
 
     private Set<FormCategory> formCategory;
+
+    /*
+    Set by event
+     */
+
+//    @PrePersist
+//    protected void onCreate() {
+//        createDate = new Date();
+//    }
+//
+//    @PreUpdate
+//    protected void onUpdate() {
+//        updateDate = new Date();
+//    }
+
+    /*
+    Getter and setter
+     */
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
+    }
 
     public FormType getFormType() {
         return formType;
@@ -48,14 +84,6 @@ public class Form implements Serializable {
 
     public void setFormCategory(Set<FormCategory> formCategory) {
         this.formCategory = formCategory;
-    }
-
-    public Date getFormDate() {
-        return formDate;
-    }
-
-    public void setFormDate(Date formDate) {
-        this.formDate = formDate;
     }
 
     public String getName() {
