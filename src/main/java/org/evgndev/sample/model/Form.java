@@ -38,20 +38,6 @@ public class Form implements Serializable {
     private Set<FormCategory> formCategory;
 
     /*
-    Set by event
-     */
-
-//    @PrePersist
-//    protected void onCreate() {
-//        createDate = new Date();
-//    }
-//
-//    @PreUpdate
-//    protected void onUpdate() {
-//        updateDate = new Date();
-//    }
-
-    /*
     Getter and setter
      */
     public Date getCreateDate() {

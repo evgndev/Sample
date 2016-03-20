@@ -28,7 +28,7 @@
                value=""
     />
 
-    <aui:select name="formType.formTypeId" label="Form type">
+    <aui:select name="formType.formTypeName" label="Form type">
         <%
             List<FormType> formTypes = (List<FormType>)renderRequest.getAttribute("formTypes");
             for (FormType formType : formTypes) {

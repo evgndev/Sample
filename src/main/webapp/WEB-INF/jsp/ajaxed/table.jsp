@@ -3,23 +3,29 @@
 <%@ page import="org.evgndev.sample.model.Form" %>
 <%@ page import="org.evgndev.sample.model.FormCategory" %>
 <%@ page import="com.google.common.base.Joiner" %>
+<%@ page import="org.evgndev.sample.dto.FormDto" %>
 
 <%@include file="/WEB-INF/jsp/init.jsp" %>
 
 <%
-    List<Form> forms = (List<Form>)request.getAttribute("forms");
+    List<FormDto> forms = (List<FormDto>)request.getAttribute("forms");
+    Long count = (Long)request.getAttribute("count");
+
+    String orderByCol = ParamUtil.getString(request, ORDER_BY_COL, "formId");
+    String orderByType = ParamUtil.getString(request, ORDER_BY_TYPE, "asc");
 
 %>
 
 <%-- table --%>
 <liferay-ui:search-container
         emptyResultsMessage="there-are-no-forms"
-        delta="20"
+        orderByCol="<%= orderByCol %>"
+        orderByType="<%= orderByType %>"
 >
 
     <liferay-ui:search-container-results>
         <%
-            total = forms.size();
+            total = count.intValue();
             results = forms;
 
             pageContext.setAttribute("results", results);
@@ -28,46 +34,26 @@
     </liferay-ui:search-container-results>
 
     <liferay-ui:search-container-row
-            className="org.evgndev.sample.model.Form"
+            className="org.evgndev.sample.dto.FormDto"
             keyProperty="formId"
             modelVar="form"
             rowVar="row"
     >
 
         <%-- Identificator--%>
-        <liferay-ui:search-container-column-text
-                name="id"
-                value="<%= String.valueOf(form.getFormId()) %>"
-        />
+        <liferay-ui:search-container-column-text name="formId" orderable="true"/>
 
-        <%-- Name--%>
-        <liferay-ui:search-container-column-text name="name"/>
+        <%-- Name --%>
+        <liferay-ui:search-container-column-text name="name" orderable="true"/>
+
+        <%-- Date --%>
+        <liferay-ui:search-container-column-text name="updateDate" orderable="true"/>
 
         <%-- Type --%>
-        <%
-            String formTypeName = "";
-            if (form.getFormType() != null) {
-                formTypeName = form.getFormType().getName();
-            }
-        %>
-        <liferay-ui:search-container-column-text name="formType" value="<%= formTypeName %>"/>
+       <liferay-ui:search-container-column-text name="formTypeName"/>
 
         <%-- Category --%>
-        <%
-
-            String categoryNamesStr = "";
-            Set<FormCategory> formCategories = form.getFormCategory();
-            if (formCategories != null && !formCategories.isEmpty()) {
-                Set<String> categoryNames = new HashSet<String>();
-
-                for (FormCategory category : formCategories) {
-                    categoryNames.add(category.getName());
-                }
-
-                categoryNamesStr = Joiner.on(", ").join(categoryNames);
-            }
-        %>
-        <liferay-ui:search-container-column-text name="category" value="<%= categoryNamesStr %>"/>
+      <liferay-ui:search-container-column-text name="formCategoryNames"/>
 
     </liferay-ui:search-container-row>
     <liferay-ui:search-iterator searchContainer="<%= searchContainer %>"/>

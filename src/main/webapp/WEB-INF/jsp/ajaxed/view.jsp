@@ -13,6 +13,8 @@
 
     long delta = ParamUtil.getLong(request, DELTA, 20);
     long cur = ParamUtil.getLong(request, CUR, 1);
+    String getOrderByCol = ParamUtil.getString(request, ORDER_BY_COL, "formId");
+    String getOrderByType = ParamUtil.getString(request, ORDER_BY_TYPE, "asc");
 %>
 <liferay-ui:header title="<%= title %>" backURL="<%= backURL %>" showBackURL="true"/>
 
@@ -56,6 +58,14 @@
             return '<%= cur %>';
         };
 
+        my.getOrderByCol = function () {
+            return '<%= getOrderByCol %>';
+        };
+
+        my.getOrderByType = function () {
+            return '<%= getOrderByType %>';
+        };
+
         return my;
     }());
 
@@ -77,6 +87,8 @@
 
             renderUrl.setParameter("delta", viewJSP.getDelta());
             renderUrl.setParameter("cur", viewJSP.getCur());
+            renderUrl.setParameter("orderByCol", viewJSP.getOrderByCol());
+            renderUrl.setParameter("orderByType", viewJSP.getOrderByType());
 
             include(viewJSP.getPlaceholderSelector(), renderUrl, viewJSP.getTableCmd());
         };

@@ -1,5 +1,6 @@
 package org.evgndev.sample.service;
 
+import org.evgndev.sample.dto.FormDto;
 import org.evgndev.sample.model.Form;
 import org.evgndev.sample.model.FormCategory;
 import org.evgndev.sample.model.FormType;
@@ -9,9 +10,12 @@ import org.evgndev.sample.repository.FormTypeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 
 @Service("formService")
@@ -33,11 +37,30 @@ public class FormServiceImpl implements FormService {
      * Add a new form
      */
     public void addForm(Form form) {
+
+        form.setCreateDate(new Date());
+        form.setUpdateDate(new Date());
+
         formRepository.saveAndFlush(form);
     }
 
-    public List<Form> getForms() {
-        return formRepository.findAll();
+    public List<FormDto> getFormDtoList(int start, int size, String orderByCol, String orderByType) {
+
+        PageRequest pageRequest = new PageRequest(
+                start - 1,
+                size,
+                Sort.Direction.fromStringOrNull(orderByType),
+                orderByCol
+        );
+
+        List<Form> formList = formRepository.findAll(pageRequest).getContent();
+
+        return FormDto.getFormDtoList(formList);
+    }
+
+    @Override
+    public long getFormsCount() {
+        return formRepository.count();
     }
 
     public List<FormType> getFormTypes(){

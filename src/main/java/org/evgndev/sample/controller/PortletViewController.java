@@ -16,6 +16,7 @@ package org.evgndev.sample.controller;
 
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.ReleaseInfo;
+import org.evgndev.sample.dto.FormDto;
 import org.evgndev.sample.model.Form;
 import org.evgndev.sample.model.FormCategory;
 import org.evgndev.sample.model.FormType;
@@ -39,6 +40,7 @@ import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
+import javax.portlet.ResourceRequest;
 import java.util.List;
 import java.util.Set;
 
@@ -63,8 +65,11 @@ public class PortletViewController {
 		String page = ParamUtil.getString(request,"mvcPath", JSP_VIEW);
 
 		if (page.equals(JSP_VIEW)) {
-			List<Form> forms = formService.getForms();
-			model.addAttribute("forms", forms);
+			int cur = ParamUtil.getInteger(request,"cur", 0);
+			int delta = ParamUtil.getInteger(request,"delta", 20);
+
+//			List<Form> forms = formService.getFormDtoList(cur, delta);
+//			model.addAttribute("forms", forms);
 		} else if (page.equals(JSP_EDIT)) {
 			List<FormType> formTypes = formService.getFormTypes();
 			model.addAttribute("formTypes", formTypes);
@@ -79,9 +84,19 @@ public class PortletViewController {
 
 
 	@ResourceMapping
-	public String getTableJSP(ModelMap model) {
-		List<Form> forms = formService.getForms();
+	public String getTableJSP(ResourceRequest request, ModelMap model) {
+
+		int cur = ParamUtil.getInteger(request,"cur", 1);
+		int delta = ParamUtil.getInteger(request,"delta", 20);
+		String getOrderByCol = ParamUtil.getString(request, "orderByCol", "formId");
+		String getOrderByType = ParamUtil.getString(request, "orderByType", "asc");
+
+		List<FormDto> forms = formService.getFormDtoList(cur, delta,getOrderByCol, getOrderByType);
+		long count = formService.getFormsCount();
+
 		model.addAttribute("forms", forms);
+		model.addAttribute("count", count);
+
 		return JSP_TABLE;
 	}
 
