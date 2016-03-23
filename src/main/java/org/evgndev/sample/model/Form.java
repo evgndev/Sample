@@ -20,6 +20,7 @@ public class Form implements Serializable {
     private Long formId;
 
     private String name;
+    private String description;
 
     @Temporal(TemporalType.DATE)
     private Date createDate;

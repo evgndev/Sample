@@ -16,12 +16,11 @@
     String getOrderByCol = ParamUtil.getString(request, ORDER_BY_COL, "formId");
     String getOrderByType = ParamUtil.getString(request, ORDER_BY_TYPE, "asc");
 %>
-<liferay-ui:header title="<%= title %>" backURL="<%= backURL %>" showBackURL="true"/>
 
 <portlet:renderURL var="editURL">
     <portlet:param name="mvcPath" value='<%= PortletViewController.JSP_EDIT %>'/>
 </portlet:renderURL>
-<aui:a href="<%= editURL %>">edit</aui:a>
+<aui:a href="<%= editURL %>"><liferay-ui:message key="form.createForm"/></aui:a>
 
 <%-- table.jsp include here--%>
 <div class="tablePlaceholder" id="<portlet:namespace/>tablePlaceholder">

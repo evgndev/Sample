@@ -13,6 +13,7 @@ import java.util.*;
 public class FormDto {
     private String formId;
     private String name;
+    private String description;
     private String updateDate;
     private String formTypeName;
     private String formCategoryNames;

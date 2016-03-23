@@ -8,12 +8,11 @@
 <%@include file="/WEB-INF/jsp/init.jsp" %>
 
 <%
-    List<FormDto> forms = (List<FormDto>)request.getAttribute("forms");
-    Long count = (Long)request.getAttribute("count");
+    List<FormDto> forms = (List<FormDto>) request.getAttribute("forms");
+    Long count = (Long) request.getAttribute("count");
 
     String orderByCol = ParamUtil.getString(request, ORDER_BY_COL, "formId");
     String orderByType = ParamUtil.getString(request, ORDER_BY_TYPE, "asc");
-
 %>
 
 <%-- table --%>
@@ -22,7 +21,6 @@
         orderByCol="<%= orderByCol %>"
         orderByType="<%= orderByType %>"
 >
-
     <liferay-ui:search-container-results>
         <%
             total = count.intValue();
@@ -39,22 +37,32 @@
             modelVar="form"
             rowVar="row"
     >
-
-        <%-- Identificator--%>
-        <liferay-ui:search-container-column-text name="formId" orderable="true"/>
-
         <%-- Name --%>
-        <liferay-ui:search-container-column-text name="name" orderable="true"/>
+        <liferay-ui:search-container-column-text property="name"
+                                                 orderableProperty="name"
+                                                 name="form.table.name"
+                                                 orderable="true"
+        />
 
         <%-- Date --%>
-        <liferay-ui:search-container-column-text name="updateDate" orderable="true"/>
+        <liferay-ui:search-container-column-text property="updateDate"
+                                                 orderableProperty="updateDate"
+                                                 name="form.table.updateDate"
+                                                 orderable="true"
+        />
 
         <%-- Type --%>
-       <liferay-ui:search-container-column-text name="formTypeName"/>
+        <liferay-ui:search-container-column-text property="formTypeName"
+                                                 orderableProperty="formTypeName"
+                                                 name="form.table.formTypeName"
+        />
 
         <%-- Category --%>
-      <liferay-ui:search-container-column-text name="formCategoryNames"/>
-
+        <liferay-ui:search-container-column-text property="formCategoryNames"
+                                                 orderableProperty="formCategoryNames"
+                                                 name="form.table.formCategoryNames"
+        />
     </liferay-ui:search-container-row>
+
     <liferay-ui:search-iterator searchContainer="<%= searchContainer %>"/>
 </liferay-ui:search-container>
