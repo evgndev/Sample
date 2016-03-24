@@ -14,7 +14,7 @@ public class FormDto {
     private String formId;
     private String name;
     private String description;
-    private String updateDate;
+    private String formDate;
     private String formTypeName;
     private String formCategoryNames;
 
@@ -34,12 +34,20 @@ public class FormDto {
         this.name = name;
     }
 
-    public String getUpdateDate() {
-        return updateDate;
+    public String getDescription() {
+        return description;
     }
 
-    public void setUpdateDate(String updateDate) {
-        this.updateDate = updateDate;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getFormDate() {
+        return formDate;
+    }
+
+    public void setFormDate(String updateDate) {
+        this.formDate = updateDate;
     }
 
     public String getFormTypeName() {
@@ -68,9 +76,9 @@ public class FormDto {
             formDto.setName(form.getName());
             formDto.setFormTypeName(form.getFormType().getName());
 
-            Date updateDate = form.getUpdateDate();
-            if (updateDate != null) {
-                formDto.setUpdateDate(DateUtil.toViewDateFormatString(updateDate));
+            Date formDate = form.getFormDate();
+            if (formDate != null) {
+                formDto.setFormDate(DateUtil.toViewDateFormatString(formDate));
             }
 
             String categoryNamesStr = "";

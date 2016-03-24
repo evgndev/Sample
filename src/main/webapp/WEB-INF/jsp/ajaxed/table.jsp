@@ -11,13 +11,13 @@
     List<FormDto> forms = (List<FormDto>) request.getAttribute("forms");
     Long count = (Long) request.getAttribute("count");
 
-    String orderByCol = ParamUtil.getString(request, ORDER_BY_COL, "formId");
-    String orderByType = ParamUtil.getString(request, ORDER_BY_TYPE, "asc");
+    String orderByCol = ParamUtil.getString(request, ORDER_BY_COL);
+    String orderByType = ParamUtil.getString(request, ORDER_BY_TYPE);
 %>
 
 <%-- table --%>
 <liferay-ui:search-container
-        emptyResultsMessage="there-are-no-forms"
+        emptyResultsMessage="form.noForms"
         orderByCol="<%= orderByCol %>"
         orderByType="<%= orderByType %>"
 >
@@ -45,9 +45,9 @@
         />
 
         <%-- Date --%>
-        <liferay-ui:search-container-column-text property="updateDate"
-                                                 orderableProperty="updateDate"
-                                                 name="form.table.updateDate"
+        <liferay-ui:search-container-column-text property="formDate"
+                                                 orderableProperty="formDate"
+                                                 name="form.table.formDate"
                                                  orderable="true"
         />
 

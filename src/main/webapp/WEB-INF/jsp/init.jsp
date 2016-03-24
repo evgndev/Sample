@@ -35,9 +35,6 @@
 <portlet:defineObjects />
 <liferay-theme:defineObjects />
 
-<%--<script src="<c:url value="/js/jquery-1.8.3.js"/>" type="text/javascript"></script>--%>
-<script src="<c:url value="/js/main.js"/>" type="text/javascript"></script>
-
 <%!
     static final String CUR = "cur";
     static final String DELTA = "delta";

@@ -23,9 +23,7 @@ public class Form implements Serializable {
     private String description;
 
     @Temporal(TemporalType.DATE)
-    private Date createDate;
-    @Temporal(TemporalType.DATE)
-    private Date updateDate;
+    private Date formDate;
 
     @ManyToOne
     @JoinColumn(name = "formTypeId")
@@ -38,9 +36,31 @@ public class Form implements Serializable {
 
     private Set<FormCategory> formCategory;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updateDate;
+
     /*
     Getter and setter
      */
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Date getFormDate() {
+        return formDate;
+    }
+
+    public void setFormDate(Date formDate) {
+        this.formDate = formDate;
+    }
+
     public Date getCreateDate() {
         return createDate;
     }

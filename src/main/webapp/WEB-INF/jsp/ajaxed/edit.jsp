@@ -2,6 +2,8 @@
 <%@ page import="com.liferay.portal.kernel.util.ParamUtil" %>
 <%@ page import="org.evgndev.sample.model.FormType" %>
 <%@ page import="org.evgndev.sample.model.FormCategory" %>
+<%@ page import="org.evgndev.sample.*" %>
+<%@ page import="org.evgndev.sample.DateUtil" %>
 
 <%@include file="/WEB-INF/jsp/init.jsp" %>
 
@@ -23,14 +25,23 @@
     <aui:input name="name"
                label="form.name"
                placeholder=""
+               required="true"
                value=""
     />
 
     <aui:input name="description"
+               type="textarea"
                label="form.description"
                placeholder=""
-               required="true"
                value=""
+    />
+
+    <aui:input name="formDate"
+               label="form.formDate"
+               placeholder=""
+               value="<%= DateUtil.toViewDateFormatString(new Date()) %>"
+               type="text"
+               cssClass="date"
     />
 
     <aui:select name="formType.formTypeId" label="form.formTypeName">

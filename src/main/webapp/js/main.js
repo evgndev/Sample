@@ -138,3 +138,19 @@ function clearCombobox(someSelect) {
     var firstOption = $(someSelect).find("option:first-child");
     someSelect.empty().append(firstOption);
 }
+
+AUI().use('aui-datepicker', function (A) {
+    new A.DatePicker({
+        trigger: '.date',
+        namespace: getNamespace(),
+        popover: { zIndex: 99999 },
+        mask: '%d.%m.%Y',
+        calendar: {
+//                    selectMultipleDates: false,
+//                    selectionMode: 'multiple',
+//                    minimumDate: new Date(2011,00,01),
+            maximumDate: new Date()
+        }
+    });
+});
+

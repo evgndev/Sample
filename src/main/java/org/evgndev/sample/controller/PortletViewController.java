@@ -1,11 +1,11 @@
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
+ * <p>
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- *
+ * <p>
  * This library is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
@@ -14,8 +14,10 @@
 
 package org.evgndev.sample.controller;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.ReleaseInfo;
+import org.evgndev.sample.DateUtil;
 import org.evgndev.sample.dto.FormDto;
 import org.evgndev.sample.model.Form;
 import org.evgndev.sample.model.FormCategory;
@@ -25,10 +27,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -41,6 +43,8 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.ResourceRequest;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -48,82 +52,102 @@ import java.util.Set;
 @RequestMapping("VIEW")
 public class PortletViewController {
 
-	private static final Logger log = LoggerFactory.getLogger(PortletViewController.class.getName());
-	
-	public static final String CMD_TABLE = "cmdTable";
-	public static final String JSP_VIEW = "ajaxed/view";
-	public static final String JSP_TABLE = "ajaxed/table";
-	public static final String JSP_EDIT= "ajaxed/edit";
+    private static final Logger log = LoggerFactory.getLogger(PortletViewController.class.getName());
 
+    public static final String CMD_TABLE = "cmdTable";
+    public static final String JSP_VIEW = "ajaxed/view";
+    public static final String JSP_TABLE = "ajaxed/table";
+    public static final String JSP_EDIT = "ajaxed/edit";
 
-	@Autowired
-	private FormService formService;
+    public static final String FILTER_NAME = "filterName";
+    public static final String FILTER_FORM_TYPE_ID = "filterFormTypeId";
+    public static final String FILTER_FORM_CATEGORY_ID = "filterFormCategoryId";
 
-	@RenderMapping
-	public String question(RenderRequest request, Model model) {
+    @Autowired
+    private FormService formService;
 
-		String page = ParamUtil.getString(request,"mvcPath", JSP_VIEW);
+    @RenderMapping
+    public String question(RenderRequest request, Model model) {
+        String page = ParamUtil.getString(request, "mvcPath", JSP_VIEW);
 
-		if (page.equals(JSP_VIEW)) {
-			int cur = ParamUtil.getInteger(request,"cur", 0);
-			int delta = ParamUtil.getInteger(request,"delta", 20);
+        List<FormType> formTypes = formService.getFormTypes();
+        model.addAttribute("formTypes", formTypes);
 
-//			List<Form> forms = formService.getFormDtoList(cur, delta);
-//			model.addAttribute("forms", forms);
-		} else if (page.equals(JSP_EDIT)) {
-			List<FormType> formTypes = formService.getFormTypes();
-			model.addAttribute("formTypes", formTypes);
+        List<FormCategory> formCategories = formService.getFormCategories();
+        model.addAttribute("formCategories", formCategories);
 
-			List<FormCategory> formCategories = formService.getFormCategories();
-			model.addAttribute("formCategories", formCategories);
-		}
+        return page;
+    }
 
-		model.addAttribute("releaseInfo", ReleaseInfo.getReleaseInfo());
-		return page;
-	}
+    @ResourceMapping
+    public String getTableJSP(ResourceRequest request, ModelMap model) {
 
+        int cur = ParamUtil.getInteger(request, "cur", 1);
+        int delta = ParamUtil.getInteger(request, "delta", 20);
+        String getOrderByCol = ParamUtil.getString(request, "orderByCol", "formId");
+        String getOrderByType = ParamUtil.getString(request, "orderByType", "desc");
 
-	@ResourceMapping
-	public String getTableJSP(ResourceRequest request, ModelMap model) {
+        String filterName = ParamUtil.getString(request, FILTER_NAME);
+        Long filterFormTypeId = ParamUtil.getLong(request, FILTER_FORM_TYPE_ID);
+        Long filterFormCategoryId = ParamUtil.getLong(request, FILTER_FORM_CATEGORY_ID);
 
-		int cur = ParamUtil.getInteger(request,"cur", 1);
-		int delta = ParamUtil.getInteger(request,"delta", 20);
-		String getOrderByCol = ParamUtil.getString(request, "orderByCol", "formId");
-		String getOrderByType = ParamUtil.getString(request, "orderByType", "asc");
+        List<FormDto> forms = formService.getFormDtoList(
+                filterName,
+                filterFormTypeId,
+                filterFormCategoryId,
+                cur, delta,
+                getOrderByCol, getOrderByType
+        );
 
-		List<FormDto> forms = formService.getFormDtoList(cur, delta,getOrderByCol, getOrderByType);
-		long count = formService.getFormsCount();
+        long count = formService.getFormsCount(
+                filterName,
+                filterFormTypeId,
+                filterFormCategoryId
+        );
 
-		model.addAttribute("forms", forms);
-		model.addAttribute("count", count);
+        model.addAttribute("forms", forms);
+        model.addAttribute("count", count);
 
-		return JSP_TABLE;
-	}
+        return JSP_TABLE;
+    }
 
-	@ActionMapping(params = "action=saveForm")
-	public void saveForm(ActionRequest actionRequest,
-						 ActionResponse actionResponse,
-						 Model model,
-						 @ModelAttribute("form") Form form,
-						 BindingResult result) throws Exception {
+    @ActionMapping(params = "action=saveForm")
+    public void saveForm(ActionRequest actionRequest,
+                         ActionResponse actionResponse,
+                         Model model,
+                         @ModelAttribute("form") Form form) throws Exception {
 
-		log.info("form: " + form.getName());
-		formService.addForm(form);
-		log.info("form added");
-	}
+        formService.updateForm(form);
+    }
 
-	@InitBinder
-	protected void initBinder(WebDataBinder binder) throws Exception{
-		binder.registerCustomEditor(Set.class,"formCategory", new CustomCollectionEditor(Set.class){
-			protected Object convertElement(Object element){
-				if (element instanceof String) {
-					FormCategory formCategory = formService.getFormCategory(Long.parseLong(element.toString()));
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) throws Exception {
+        binder.registerCustomEditor(
+                Set.class,
+                "formCategory",
+                new CustomCollectionEditor(Set.class) {
+                    protected Object convertElement(Object element) {
+                        if (element instanceof String) {
+                            return formService.getFormCategory(Long.parseLong(element.toString()));
+                        }
+                        return null;
+                    }
+                });
 
-					return formCategory;
-				}
-				return null;
-			}
-		});
-	}
-
+        DateFormat dateFormat = DateUtil.getViewDateFormat();
+        binder.registerCustomEditor(
+                Date.class,
+                "formDate",
+                new CustomDateEditor(dateFormat, false) {
+                    @Override
+                    public void setAsText(String text) throws IllegalArgumentException {
+                        if (!Strings.isNullOrEmpty(text) && text.contains(",")) {
+                            // text example: "123123123, 30.12.2011"
+                            text = Splitter.on(",").splitToList(text).get(1);
+                        }
+                        super.setAsText(text);
+                    }
+                }
+        );
+    }
 }
