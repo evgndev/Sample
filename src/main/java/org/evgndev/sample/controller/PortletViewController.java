@@ -83,7 +83,7 @@ public class PortletViewController {
     public String getTableJSP(ResourceRequest request, ModelMap model) {
 
         int cur = ParamUtil.getInteger(request, "cur", 1);
-        int delta = ParamUtil.getInteger(request, "delta", 20);
+        int delta = ParamUtil.getInteger(request, "delta", 10);
         String getOrderByCol = ParamUtil.getString(request, "orderByCol", "formId");
         String getOrderByType = ParamUtil.getString(request, "orderByType", "desc");
 

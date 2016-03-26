@@ -11,6 +11,7 @@
     List<FormDto> forms = (List<FormDto>) request.getAttribute("forms");
     Long count = (Long) request.getAttribute("count");
 
+    int delta = ParamUtil.getInteger(request, DELTA, 10);
     String orderByCol = ParamUtil.getString(request, ORDER_BY_COL, "formId");
     String orderByType = ParamUtil.getString(request, ORDER_BY_TYPE, "desc");
 %>
@@ -19,6 +20,7 @@
 <liferay-ui:search-container
         id="formTableSearchContainer"
         emptyResultsMessage="form.noForms"
+        delta="<%= delta %>"
         orderByCol="<%= orderByCol %>"
         orderByType="<%= orderByType %>"
 >
