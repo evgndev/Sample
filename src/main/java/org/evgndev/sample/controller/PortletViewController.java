@@ -108,6 +108,11 @@ public class PortletViewController {
         model.addAttribute("forms", forms);
         model.addAttribute("count", count);
 
+        model.addAttribute("cur", cur);
+        model.addAttribute("delta", delta);
+        model.addAttribute("orderByCol", getOrderByCol);
+        model.addAttribute("orderByType", getOrderByType);
+
         return JSP_TABLE;
     }
 

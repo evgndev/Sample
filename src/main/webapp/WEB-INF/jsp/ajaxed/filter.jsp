@@ -85,7 +85,39 @@
         /**
          * Public methods
          */
+        view.reloadData = function (delta, cur, orderByCol, orderByType) {
+            showMask(viewJSP.getPlaceholderSelector());
+
+            var renderUrl = createResourceURL(getPortletName(), getPlid());
+
+            load(renderUrl, '<%= PortletViewController.FILTER_NAME %>', true);
+            load(renderUrl, '<%= PortletViewController.FILTER_FORM_TYPE_ID %>');
+            load(renderUrl, '<%= PortletViewController.FILTER_FORM_CATEGORY_ID %>');
+
+            if (!delta) {
+                delta = viewJSP.getDelta();
+            }
+            if (!cur) {
+                cur = viewJSP.getCur();
+            }
+            if (!orderByCol) {
+                orderByCol = viewJSP.getOrderByCol();
+            }
+            if (!orderByType) {
+                orderByType = viewJSP.getOrderByType();
+            }
+
+            renderUrl.setParameter("delta", delta);
+            renderUrl.setParameter("cur", cur);
+            renderUrl.setParameter("orderByCol", orderByCol);
+            renderUrl.setParameter("orderByType", orderByType);
+
+            include(viewJSP.getPlaceholderSelector(), renderUrl, viewJSP.getTableCmd());
+        };
+
+
         view.loadData = function () {
+
             var renderUrl = createResourceURL(getPortletName(), getPlid());
 
             load(renderUrl, '<%= PortletViewController.FILTER_NAME %>', true);

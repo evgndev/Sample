@@ -11,12 +11,13 @@
     List<FormDto> forms = (List<FormDto>) request.getAttribute("forms");
     Long count = (Long) request.getAttribute("count");
 
-    String orderByCol = ParamUtil.getString(request, ORDER_BY_COL);
-    String orderByType = ParamUtil.getString(request, ORDER_BY_TYPE);
+    String orderByCol = ParamUtil.getString(request, ORDER_BY_COL, "formId");
+    String orderByType = ParamUtil.getString(request, ORDER_BY_TYPE, "desc");
 %>
 
 <%-- table --%>
 <liferay-ui:search-container
+        id="formTableSearchContainer"
         emptyResultsMessage="form.noForms"
         orderByCol="<%= orderByCol %>"
         orderByType="<%= orderByType %>"
@@ -66,3 +67,45 @@
 
     <liferay-ui:search-iterator searchContainer="<%= searchContainer %>"/>
 </liferay-ui:search-container>
+
+<script type="text/javascript">
+
+
+    AUI().ready('liferay-portlet-url', function () {
+        tableJSP.updateLinks();
+    });
+
+    var tableJSP = (function () {
+        var my = {};
+
+        function _updateLink(a) {
+            var url = a.href;
+
+            var delta = getParameterByName(getNamespace() + 'delta', url);
+            var cur = getParameterByName(getNamespace() + 'cur', url);
+            var orderByCol = getParameterByName(getNamespace() + 'orderByCol', url);
+            var orderByType = getParameterByName(getNamespace() + 'orderByType', url);
+
+            if(!orderByCol || orderByCol == 'null') {
+                orderByCol = '';
+            }
+
+            if(!orderByType || orderByType == 'null') {
+                orderByType = '';
+            }
+
+            a.href = "javascript:view.reloadData(" + delta + ", " + cur + ", '" + orderByCol + "','" + orderByType + "');";
+        }
+
+        my.updateLinks = function () {
+            var $searchContainerDiv = $(viewJSP.getPlaceholderSelector());
+            var links = $searchContainerDiv.find("a");
+
+            links.each(function (index, a) {
+                _updateLink(a);
+            });
+        };
+
+        return my;
+    }());
+</script>

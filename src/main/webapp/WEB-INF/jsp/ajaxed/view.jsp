@@ -4,13 +4,6 @@
 
 <%@include file="/WEB-INF/jsp/init.jsp" %>
 
-<%
-    long delta = ParamUtil.getLong(request, DELTA, 20);
-    long cur = ParamUtil.getLong(request, CUR, 1);
-    String getOrderByCol = ParamUtil.getString(request, ORDER_BY_COL, "formId");
-    String getOrderByType = ParamUtil.getString(request, ORDER_BY_TYPE, "desc");
-%>
-
 <portlet:renderURL var="editURL">
     <portlet:param name="mvcPath" value='<%= PortletViewController.JSP_EDIT %>'/>
 </portlet:renderURL>
@@ -27,10 +20,6 @@
 
 <script type="text/javascript">
 
-    /**
-     *  Provide fields and constants. Only getters.
-     *  NOTE: Define js behavior in /js/
-     */
     var viewJSP = (function () {
         var my = {};
 
@@ -44,19 +33,35 @@
         };
 
         my.getDelta = function () {
-            return '<%= delta %>';
+            return my.delta;
         };
 
         my.getCur = function () {
-            return '<%= cur %>';
+            return my.cur;
         };
 
         my.getOrderByCol = function () {
-            return '<%= getOrderByCol %>';
+            return my.orderByCol;
         };
 
         my.getOrderByType = function () {
-            return '<%= getOrderByType %>';
+            return my.orderByType;
+        };
+
+        my.setDelta = function (delta) {
+            my.delta = delta;
+        };
+
+        my.setCur = function (cur) {
+            my.cur = cur;
+        };
+
+        my.setOrderByCol = function (orderByCol) {
+            my.orderByCol = orderByCol;
+        };
+
+        my.setOrderByType = function (orderByType) {
+            my.orderByType = orderByType;
         };
 
         return my;
