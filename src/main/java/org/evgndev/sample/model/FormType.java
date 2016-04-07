@@ -1,5 +1,7 @@
 package org.evgndev.sample.model;
 
+import com.google.common.base.Objects;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -36,6 +38,19 @@ public class FormType implements Serializable {
 
     public void setFormTypeId(Long formTypeId) {
         this.formTypeId = formTypeId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FormType formType = (FormType) o;
+        return Objects.equal(formTypeId, formType.formTypeId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(formTypeId);
     }
 }
 

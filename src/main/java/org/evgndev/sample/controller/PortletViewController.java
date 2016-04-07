@@ -59,6 +59,9 @@ public class PortletViewController {
     public static final String JSP_TABLE = "ajaxed/table";
     public static final String JSP_EDIT = "ajaxed/edit";
 
+    public static final String FORM_ID = "formId";
+    public static final String FORM = "form";
+
     public static final String FILTER_NAME = "filterName";
     public static final String FILTER_FORM_TYPE_ID = "filterFormTypeId";
     public static final String FILTER_FORM_CATEGORY_ID = "filterFormCategoryId";
@@ -69,6 +72,9 @@ public class PortletViewController {
     @RenderMapping
     public String question(RenderRequest request, Model model) {
         String page = ParamUtil.getString(request, "mvcPath", JSP_VIEW);
+
+        long formId = ParamUtil.getLong(request, PortletViewController.FORM_ID);
+        model.addAttribute(FORM, formService.getForm(formId));
 
         List<FormType> formTypes = formService.getFormTypes();
         model.addAttribute("formTypes", formTypes);
@@ -122,7 +128,21 @@ public class PortletViewController {
                          Model model,
                          @ModelAttribute("form") Form form) throws Exception {
 
+        form.setRemoved(false);
         formService.updateForm(form);
+    }
+
+
+    @ActionMapping(params = "action=removeForm")
+    public void removeForm(ActionRequest request,
+                           ActionResponse response,
+                           Model model) throws Exception {
+
+        long formId = ParamUtil.getLong(request, PortletViewController.FORM_ID);
+        Form form = formService.getForm(formId);
+        form.setRemoved(true);
+        formService.updateForm(form);
+
     }
 
     @InitBinder

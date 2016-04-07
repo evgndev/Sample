@@ -47,6 +47,10 @@ public class FormService {
         formRepository.saveAndFlush(form);
     }
 
+    public Form getForm(long formId) {
+        return formRepository.findOne(formId);
+    }
+
     public List<FormDto> getFormDtoList(String filterName,
                                         long filterFormTypeId,
                                         long filterFormCategoryId,
@@ -130,6 +134,8 @@ public class FormService {
                     Predicate formCategoryPredicate = join.get("formCategoryId").in(filterFormCategoryId);
                     predicate = builder.and(predicate, formCategoryPredicate);
                 }
+
+                predicate = builder.and(predicate, builder.isFalse(root.<Boolean>get("removed")));
 
                 return predicate;
             }

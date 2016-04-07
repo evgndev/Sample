@@ -1,5 +1,7 @@
 package org.evgndev.sample.model;
 
+import com.google.common.base.Objects;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -40,6 +42,8 @@ public class Form implements Serializable {
     private Date createDate;
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateDate;
+
+    private Boolean removed;
 
     /*
     Getter and setter
@@ -107,6 +111,27 @@ public class Form implements Serializable {
 
     public void setFormId(Long formId) {
         this.formId = formId;
+    }
+
+    public boolean isRemoved() {
+        return removed;
+    }
+
+    public void setRemoved(boolean removed) {
+        this.removed = removed;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Form form = (Form) o;
+        return Objects.equal(formId, form.formId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(formId);
     }
 }
 

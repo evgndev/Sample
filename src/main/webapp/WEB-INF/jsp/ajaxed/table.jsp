@@ -4,6 +4,7 @@
 <%@ page import="org.evgndev.sample.model.FormCategory" %>
 <%@ page import="com.google.common.base.Joiner" %>
 <%@ page import="org.evgndev.sample.dto.FormDto" %>
+<%@ page import="org.evgndev.sample.controller.PortletViewController" %>
 
 <%@include file="/WEB-INF/jsp/init.jsp" %>
 
@@ -65,6 +66,21 @@
                                                  orderableProperty="formCategoryNames"
                                                  name="form.table.formCategoryNames"
         />
+
+        <%-- Action --%>
+        <liferay-ui:search-container-column-text name="action">
+            <portlet:renderURL var="editURL">
+                <portlet:param name="mvcPath" value='<%= PortletViewController.JSP_EDIT %>'/>
+                <portlet:param name="<%= PortletViewController.FORM_ID %>" value='<%= form.getFormId() %>'/>
+            </portlet:renderURL>
+            <aui:a href="<%= editURL %>"><liferay-ui:message key="form.table.edit"/></aui:a>
+            <br>
+            <portlet:actionURL var="removeURL" name="removeForm">
+                <portlet:param name="<%= PortletViewController.FORM_ID %>" value='<%= form.getFormId() %>'/>
+                <portlet:param name="action" value="removeForm"/>
+            </portlet:actionURL>
+            <aui:a href="<%= removeURL %>"><liferay-ui:message key="form.table.remove"/></aui:a>
+        </liferay-ui:search-container-column-text>
     </liferay-ui:search-container-row>
 
     <liferay-ui:search-iterator searchContainer="<%= searchContainer %>"/>
@@ -101,7 +117,8 @@
 
         my.updateLinks = function () {
             var $searchContainerDiv = $(viewJSP.getPlaceholderSelector());
-            var links = $searchContainerDiv.find("a");
+                                                     // ignore row actions
+            var links = $searchContainerDiv.find("a").not("tbody tr td a");
 
             links.each(function (index, a) {
                 _updateLink(a);
