@@ -21,7 +21,7 @@
 %>
 <liferay-ui:header title="form.creation.title" backURL="<%= backURL %>" showBackURL="true"/>
 
-<portlet:actionURL name="saveForm" var="saveFormURL">
+<portlet:actionURL var="saveFormURL">
     <portlet:param name="action" value="saveForm"/>
 </portlet:actionURL>
 
@@ -61,8 +61,11 @@
         <%
             List<FormType> formTypes = (List<FormType>)renderRequest.getAttribute("formTypes");
             for (FormType formType : formTypes) {
-                log.info("TEST form.getFormType(): " + form.getFormType().getFormTypeId());
-                boolean selected = formType.equals(form.getFormType());
+
+                boolean selected = false;
+                if (form != null) {
+                    selected = formType.equals(form.getFormType());
+                }
         %>
         <aui:option label="<%= formType.getName() %>"
                     value="<%= formType.getFormTypeId() %>"
@@ -77,7 +80,11 @@
         <%
             List<FormCategory> formCategories = (List<FormCategory>)renderRequest.getAttribute("formCategories");
             for (FormCategory category : formCategories) {
-                boolean selected = form.getFormCategory().contains(category);
+
+                boolean selected = false;
+                if (form != null) {
+                    selected = form.getFormCategory().contains(category);
+                }
         %>
         <aui:option label="<%= category.getName() %>"
                     value="<%= category.getFormCategoryId() %>"
@@ -88,7 +95,47 @@
         %>
     </aui:select>
 
+    <%--Files--%>
+    <div class="control-group">
+        <label class="control-label">
+            <liferay-ui:message key="messaging.files.label"/>
+        </label>
+
+        <div class="field ml100">
+            <div class=lfr-upload-container id="fileUpload"></div>
+        </div>
+    </div>
+
     <aui:button-row>
         <aui:button type="submit" value="save"/>
     </aui:button-row>
 </aui:form>
+
+<liferay-portlet:actionURL var="deleteFileURL">
+    <portlet:param name="action" value="deleteFile"/>
+    <portlet:param name="struts_action" value="/document_library/edit_file_entry"/>
+    <portlet:param name="<%= Constants.CMD %>" value="<%= Constants.DELETE_TEMP %>"/>
+    <portlet:param name="folderId" value="<%= String.valueOf(DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) %>"/>
+</liferay-portlet:actionURL>
+
+<portlet:actionURL var="uploadFileURL">
+    <portlet:param name="action" value="uploadFile"/>
+    <portlet:param name="struts_action" value="/document_library/edit_file_entry"/>
+    <portlet:param name="<%= Constants.CMD %>" value="<%= Constants.ADD_TEMP %>"/>
+    <portlet:param name="folderId" value="<%= String.valueOf(DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) %>"/>
+</portlet:actionURL>
+
+<script type="text/javascript">
+    // from http://stackoverflow.com/questions/28109560/liferay-upload-component-usage-for-multi-file-upload
+    AUI().use('liferay-upload', function (A) {
+                new Liferay.Upload({
+                    boundingBox: '#fileUpload',
+                    maxFileSize: '10485760',  // 10mb?
+                    allowedFileTypes: '.png,.bmp,.jpg,.doc,.docx,.xls,.xlsx,.pdf,.txt', // don't work
+                    namespace: '<portlet:namespace/>',
+                    uploadFile: '<%= uploadFileURL %>',
+                    deleteFile: '<%= deleteFileURL %>'
+                });
+            }
+    );
+</script>

@@ -1,6 +1,9 @@
 package org.evgndev.sample.service;
 
 import com.google.common.base.Strings;
+import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
+import org.evgndev.sample.FileUtil;
 import org.evgndev.sample.dto.FormDto;
 import org.evgndev.sample.model.Form;
 import org.evgndev.sample.model.FormCategory;
@@ -18,14 +21,16 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
-import java.util.Date;
-import java.util.List;
+import java.io.InputStream;
+import java.util.*;
 
 @Service("formService")
 @Transactional
 public class FormService {
 
     private static final Logger log = LoggerFactory.getLogger(FormService.class.getName());
+
+    public static final String FOLDER_MESSAGE_ATTACHMENT = "sample_form_attachments";
 
     @Autowired
     private FormRepository formRepository;
@@ -38,14 +43,60 @@ public class FormService {
 
     /**
      * Add a new form
+     * @param form
+     * @param files null to ignore
      */
-    public void updateForm(Form form) {
+    public void updateForm(Form form, Map<String, FileEntry> files, List<String> errors) throws Exception {
 
         form.setCreateDate(new Date());
         form.setUpdateDate(new Date());
 
+        if (files != null) {
+            updateFiles(files, form, errors);
+        }
+
         formRepository.saveAndFlush(form);
     }
+
+    private static void updateFiles(Map<String, FileEntry> files,
+                                    Form form,
+                                    List<String> errors) throws Exception {
+
+        Set<Long> fileIds = new HashSet<Long>(files.size());
+        for (String fileName : files.keySet()) {
+            try {
+                FileEntry fileEntry = files.get(fileName);
+
+                InputStream fileAsStream = DLFileEntryLocalServiceUtil.getFileAsStream(
+                        fileEntry.getUserId(),
+                        fileEntry.getFileEntryId(),
+                        fileEntry.getVersion()
+                );
+
+                Long size = fileEntry.getSize();
+                String rndFileName = UUID.randomUUID().toString() + "_" + fileName;
+                String entryName = String.valueOf(form.getFormId());
+
+                long fileId = FileUtil.addFileToLibrary(
+                        fileAsStream,
+                        size.intValue(),
+                        rndFileName,
+                        fileName,
+                        entryName,
+                        FOLDER_MESSAGE_ATTACHMENT
+                );
+
+                fileIds.add(fileId);
+
+            } catch (Exception e) {
+                errors.add("messaging.error.cannotSaveFile$" + fileName);
+                throw new Exception("Cannot save attached file " + fileName, e);
+            }
+        }
+
+        form.setFileEntryIds(fileIds);
+    }
+
 
     public Form getForm(long formId) {
         return formRepository.findOne(formId);

@@ -31,11 +31,15 @@ public class Form implements Serializable {
     @JoinColumn(name = "formTypeId")
     private FormType formType;
 
+    @ElementCollection
+    @CollectionTable(name="sample_form_file", joinColumns=@JoinColumn(name="FORM_ID"))
+    @Column(name="FILE_ENTRY_ID")
+    private Set<Long> fileEntryIds;
+
     @ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinTable(name="sample_form_formCategory",
             joinColumns={@JoinColumn(name="FORM_ID")},
             inverseJoinColumns={@JoinColumn(name="FORM_CATEGORY_ID")})
-
     private Set<FormCategory> formCategory;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -48,6 +52,22 @@ public class Form implements Serializable {
     /*
     Getter and setter
      */
+
+    public Set<Long> getFileEntryIds() {
+        return fileEntryIds;
+    }
+
+    public void setFileEntryIds(Set<Long> fileEntryIds) {
+        this.fileEntryIds = fileEntryIds;
+    }
+
+    public Boolean getRemoved() {
+        return removed;
+    }
+
+    public void setRemoved(Boolean removed) {
+        this.removed = removed;
+    }
 
     public String getDescription() {
         return description;
@@ -111,14 +131,6 @@ public class Form implements Serializable {
 
     public void setFormId(Long formId) {
         this.formId = formId;
-    }
-
-    public boolean isRemoved() {
-        return removed;
-    }
-
-    public void setRemoved(boolean removed) {
-        this.removed = removed;
     }
 
     @Override

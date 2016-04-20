@@ -16,8 +16,12 @@ package org.evgndev.sample.controller;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.servlet.ServletResponseUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.util.PortalUtil;
 import org.evgndev.sample.DateUtil;
+import org.evgndev.sample.FileUtil;
 import org.evgndev.sample.dto.FormDto;
 import org.evgndev.sample.model.Form;
 import org.evgndev.sample.model.FormCategory;
@@ -39,14 +43,11 @@ import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.RenderRequest;
-import javax.portlet.ResourceRequest;
+import javax.portlet.*;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.text.DateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 @RequestMapping("VIEW")
@@ -65,6 +66,8 @@ public class PortletViewController {
     public static final String FILTER_NAME = "filterName";
     public static final String FILTER_FORM_TYPE_ID = "filterFormTypeId";
     public static final String FILTER_FORM_CATEGORY_ID = "filterFormCategoryId";
+
+    public static final String _TEMP_FOLDER_NAME_ATTACHMENT = "temp";
 
     @Autowired
     private FormService formService;
@@ -128,10 +131,48 @@ public class PortletViewController {
                          Model model,
                          @ModelAttribute("form") Form form) throws Exception {
 
-        form.setRemoved(false);
-        formService.updateForm(form);
+        List<String> errors = new ArrayList<String>();
+        Map<String, FileEntry> files = Collections.emptyMap();
+        try {
+
+            files = FileUtil.getTempFiles(actionRequest, _TEMP_FOLDER_NAME_ATTACHMENT, errors);
+
+            form.setRemoved(false);
+            formService.updateForm(form, files, errors);
+
+        } catch (Exception e) {
+            log.error("Cannot save form", e);
+        }
     }
 
+    @ActionMapping(params = "action=uploadFile")
+    public void uploadFile(ActionRequest actionRequest,
+                           ActionResponse actionResponse) throws Exception {
+
+        writeJSON(
+                actionRequest,
+                actionResponse,
+                FileUtil.uploadTempFile(actionRequest, actionResponse, _TEMP_FOLDER_NAME_ATTACHMENT)
+        );
+    }
+
+    @ActionMapping(params = "action=deleteFile")
+    public void deleteFile(ActionRequest actionRequest,
+                           ActionResponse actionResponse) throws Exception {
+
+        writeJSON(
+                actionRequest,
+                actionResponse,
+                FileUtil.deleteTempFile(actionRequest, actionResponse, _TEMP_FOLDER_NAME_ATTACHMENT)
+        );
+    }
+
+    private void writeJSON(PortletRequest portletRequest, ActionResponse actionResponse, Object json) throws IOException {
+        HttpServletResponse response = PortalUtil.getHttpServletResponse(actionResponse);
+        response.setContentType("application/json");
+        ServletResponseUtil.write(response, json.toString());
+        response.flushBuffer();
+    }
 
     @ActionMapping(params = "action=removeForm")
     public void removeForm(ActionRequest request,
@@ -141,7 +182,7 @@ public class PortletViewController {
         long formId = ParamUtil.getLong(request, PortletViewController.FORM_ID);
         Form form = formService.getForm(formId);
         form.setRemoved(true);
-        formService.updateForm(form);
+        formService.updateForm(form, null, new ArrayList<String>());
 
     }
 
